@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace QuadrifoglioAPI.Models
 {
@@ -22,12 +23,13 @@ namespace QuadrifoglioAPI.Models
         [StringLength(50, ErrorMessage = "Description can't be longer than 50 characters")]
         public string ProductDescription { get; set; }
 
-        [Column(TypeName = "decimal(3,2)")]
+        [Column(TypeName = "decimal(3.2)")]
         public decimal Price { get; set; }
         public Type ProductType { get; set; }
         public bool IsSpecial { get; set; }
         public decimal SalesTax { get; } = 0.12m;
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Ingredient>? Ingredients { get; set; }
     }
 }

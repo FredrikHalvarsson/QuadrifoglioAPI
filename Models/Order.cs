@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace QuadrifoglioAPI.Models
 {
@@ -23,9 +24,11 @@ namespace QuadrifoglioAPI.Models
 
         [ForeignKey("Customer")]
         public string FkCustomerId { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ApplicationUser? Customer { get; set; }
 
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<OrderProduct> OrderProducts { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace QuadrifoglioAPI.Models
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
         public string IngredientName { get; set; }
 
-        [Column(TypeName = "decimal(2,2)")]
+        [Column(TypeName = "decimal(2.2)")]
         public decimal Price { get; set; }
         public Option IngredientOption { get; set; }
     }
