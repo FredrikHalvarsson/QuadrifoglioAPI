@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using QuadrifoglioAPI.Data;
+using QuadrifoglioAPI.Models;
 
 namespace QuadrifoglioAPI
 {
@@ -10,6 +12,10 @@ namespace QuadrifoglioAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>(); //nytt
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -19,11 +25,15 @@ namespace QuadrifoglioAPI
 
             builder.Services.AddControllers();
 
+            builder.Services.AddAuthorization(); //nytt
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.MapIdentityApi<ApplicationUser>(); //nytt
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
