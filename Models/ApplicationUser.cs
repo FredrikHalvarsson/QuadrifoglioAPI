@@ -8,15 +8,17 @@ namespace QuadrifoglioAPI.Models
     public class ApplicationUser :IdentityUser
     {
 
-        [Required]
         [StringLength(50, ErrorMessage ="Name can't be longer than 50 characters")]
-        public string FirstName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? FirstName { get; set; }
 
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
-        public string LastName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? LastName { get; set; }
 
         [StringLength(50, ErrorMessage = "Address can't be longer than 50 characters")]
-        public string Address { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Address { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<Order>? Orders { get; set; }
