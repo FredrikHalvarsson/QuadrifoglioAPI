@@ -22,6 +22,8 @@ namespace QuadrifoglioAPI
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            
+
             // Register the no-op email sender
             builder.Services.AddTransient<IEmailSender, Services.NoOpEmailSender>();
 

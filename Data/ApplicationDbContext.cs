@@ -15,5 +15,11 @@ namespace QuadrifoglioAPI.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
+
+        //For more detailed error messages
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder
+                .LogTo(Console.WriteLine)
+                .EnableDetailedErrors();
     }
 }

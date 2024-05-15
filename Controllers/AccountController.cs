@@ -28,7 +28,7 @@ namespace QuadrifoglioAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe,/* lockoutOnFailure:*/ false);
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
@@ -41,7 +41,7 @@ namespace QuadrifoglioAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.Username, Email = model.Email, Address = "" };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -53,7 +53,7 @@ namespace QuadrifoglioAPI.Controllers
         }
 
         private string GenerateJwtToken(ApplicationUser user)
-        {
+        {   
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
