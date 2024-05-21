@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using QuadrifoglioAPI.Data;
@@ -17,12 +18,29 @@ namespace QuadrifoglioAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowOrigin",
+                    builder => builder.WithOrigins("https://localhost:7281")
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader());
+            });
+
+
+            // Add User Secrets
+            builder.Configuration.AddUserSecrets<Program>();
+
+            //builder.Services.AddHttpClient<GoogleMapsService>();
+
+            builder.Services.AddScoped<UserService>();
+
+
             // Add Identity services to the container
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            
 
             // Register the no-op email sender
             builder.Services.AddTransient<IEmailSender, Services.NoOpEmailSender>();
@@ -54,13 +72,33 @@ namespace QuadrifoglioAPI
             builder.Services.AddAuthorization();
 
             // Add controller services
-            builder.Services.AddControllers();
+            //builder.Services.AddControllers();
+            builder.Services.AddControllersWithViews();
 
             // Configure Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            // Get the Google Maps API key
+            var googleMapsApiKey = builder.Configuration["GoogleMaps:ApiKey"];
+
+            // Register the GoogleMapsService
+            builder.Services.AddHttpClient<GoogleMapsService>(client =>
+            {
+                client.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/");
+            });
+
+            builder.Services.AddTransient(provider => new GoogleMapsService(
+                provider.GetRequiredService<HttpClient>(),
+                googleMapsApiKey
+            ));
+
+
             var app = builder.Build();
+
+            // Use CORS middleware
+            app.UseCors("AllowOrigin");
 
             //// Map Identity API endpoints
             //app.MapIdentityApi<ApplicationUser>();

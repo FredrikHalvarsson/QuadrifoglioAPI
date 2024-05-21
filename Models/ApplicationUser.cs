@@ -20,6 +20,9 @@ namespace QuadrifoglioAPI.Models
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Address { get; set; }
 
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<Order>? Orders { get; set; }
     }
