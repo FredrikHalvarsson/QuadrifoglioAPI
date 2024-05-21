@@ -1,0 +1,97 @@
+﻿@* @using Microsoft.AspNetCore.Mvc.Rendering
+
+<div id="partial-container">
+    @Html.Partial("~/Views/Location/LocationPartial.cshtml")
+</div> *@
+@* @model Dictionary<string, string> *@
+
+<div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+
+@section Scripts {
+    <script>
+        var map;
+        var currentLocation;
+        
+
+        function initMap() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: currentLocation,
+                        zoom: 12
+                    });
+
+                    map.addListener('click', function (event) {
+                        var latLng = event.latLng;
+                        getGeocode(latLng);
+                    });
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+        function loadGoogleMapsScript(callback) {
+            var googleMapsApiKey = '@ViewData["GoogleMapsApiKey"]';
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=' + callback;
+            document.body.appendChild(script);
+        }
+
+        // Callback function to initialize the map
+        function initializeMap() {
+            initMap();
+        }
+
+        // Call the function to load the Google Maps API script
+        loadGoogleMapsScript('initializeMap');
+
+        function getGeocode(latLng) {
+            var lat = latLng.lat();
+            var lng = latLng.lng();
+            var address = lat + ',' + lng;
+
+            $.ajax({
+                url: '/api/locationapi/geocode',
+                type: 'GET',
+                data: { address: address },
+                success: function (response) {
+                    displayAddress(response.formatted_address, latLng);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function displayAddress(address, latLng) {
+            $('#clickedAddress').remove();
+            $('<div id="clickedAddress"><h3>Clicked Address:</h3><p>' + address + '</p></div>').insertAfter('#map');
+
+            // Now get the route from the current location to the clicked address
+            var origin = currentLocation.lat + ',' + currentLocation.lng;
+            var destination = latLng.lat() + ',' + latLng.lng();
+
+            $.ajax({
+                url: '/api/locationapi/route',
+                type: 'GET',
+                data: { origin: origin, destination: destination },
+                success: function (response) {
+                    displayRoute(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function displayRoute(route) {
+            $('#route').remove();
+            $('<div id="route"><h3>Route:</h3><p>' + JSON.stringify(route) + '</p></div>').insertAfter('#clickedAddress');
+        }
+    </script>
+}
