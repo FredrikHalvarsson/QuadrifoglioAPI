@@ -1,88 +1,230 @@
-﻿<div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+﻿@model QuadrifoglioAPI.DTOs.LocationPartialViewModel
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
 
-    <script>
-        var map;
-        var currentLocation;
 
-        function initMap() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    currentLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    map = new google.maps.Map(document.getElementById('map'), {
-                        center: currentLocation,
-                        zoom: 12
-                    });
+    .deliveryContainer {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto; /* Center the form horizontally */
+    }
 
-                    map.addListener('click', function (event) {
-                        var latLng = event.latLng;
-                        getGeocode(latLng);
-                    });
+    h5 {
+        text-align: center;
+        color: #333;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        color: #555;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 12px);
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+</style>
+<div class="deliveryContainer">
+    <form id="deliveryForm">
+        <div class="formGroup">
+            <label for="restaurantAddress">Select Restaurant</label>
+            <select id="restaurantAddress" class="form-control">
+                @foreach (var restaurant in Model.Restaurants)
+                {
+                    <option value="@restaurant.Address.Street, @restaurant.Address.City, @restaurant.Address.State, @restaurant.Address.PostalCode, @restaurant.Address.Country">
+                        @restaurant.Name
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="formGroup">
+            <label for="deliveryAddress">Select Delivery Address:</label>
+            <select id="deliveryAddress" class="form-control">
+                @foreach (var address in Model.User.Addresses)
+                {
+                    <option value="@address.Street, @address.City, @address.State, @address.PostalCode, @address.Country">
+                        @address.Street, @address.City, @address.State
+                    </option>
+                }
+            </select>
+            <br/>
+            <h5 class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Add a New Delivery Address:
+            </h5>
+        </div>
+        
+    </form>
+    <br/>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            <form id="newAddressForm">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <input type="text" id="newStreetAddress" class="form-control" placeholder="Address" />
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="form-group col-md-2">
+                        <input type="text" id="newPostalCode" class="form-control" placeholder="Zip" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="text" id="newRegion" class="form-control" placeholder="Region" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <input type="text" id="newCountry" class="form-control" placeholder="Country" />
+                    </div>
+                </div>
+                <button id="addNewAddress" class="btn btn-primary">Add New Address</button>
+            </form>
+        </div>
+    </div>
+    <br />
+    <button id="getRoute" class="btn btn-primary">Get Route</button>
+    <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+    <div id="route"></div>
+</div>
+
+
+<script>
+    var map;
+    var googleMapsApiKey = '@Model.GoogleMapsApiKey';
+
+    function initMap() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                currentLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: currentLocation,
+                    zoom: 16
                 });
-            } else {
-                alert("Geolocation is not supported by this browser.");
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function loadGoogleMapsScript(callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=' + callback;
+        document.body.appendChild(script);
+    }
+
+    loadGoogleMapsScript('initMap');
+
+    document.getElementById('getRoute').addEventListener('click', function () {
+        var restaurantAddress = document.getElementById('restaurantAddress').value;
+        var deliveryAddress = document.getElementById('deliveryAddress').value;
+
+        if (restaurantAddress && deliveryAddress) {
+            getRoute(restaurantAddress, deliveryAddress);
+        } else {
+            alert("Please select both addresses.");
+        }
+    });
+
+    document.getElementById('addNewAddress').addEventListener('click', function () {
+        var street = document.getElementById('newStreetAddress').value;
+        var postal = document.getElementById('newPostalCode').value;
+        var region = document.getElementById('newRegion').value;
+        var country = document.getElementById('newCountry').value;
+
+        var newAddress = {
+            Street: street,
+            PostalCode: postal,
+            Region: region,
+            Country: country
+        };
+
+        getGeocode(newAddress, function (latLng) {
+            var deliverySelect = document.getElementById('deliveryAddress');
+            var option = document.createElement("option");
+            option.text = `${newAddress.Street}, ${newAddress.PostalCode}, ${newAddress.Region}, ${newAddress.Country}`;
+            option.value = `${newAddress.Street}, ${newAddress.PostalCode}, ${newAddress.Region}, ${newAddress.Country}`;
+            deliverySelect.add(option);
+
+            // Add the new address to the user's list of addresses
+            addUserAddress(newAddress);
+        });
+    });
+
+    function getGeocode(address, callback) {
+        var addressString = `${address.Street}, ${address.PostalCode}, ${address.Region}, ${address.Country}`;
+        $.ajax({
+            url: 'https://localhost:7223/api/locationapi/geocode',
+            type: 'GET',
+            data: { address: addressString },
+            success: function (response) {
+                var location = response.results[0].geometry.location;
+                callback(location);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
             }
-        }
-        function loadGoogleMapsScript(callback) {
-            var googleMapsApiKey = '@ViewData["GoogleMapsApiKey"]';
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=' + callback;
-            document.body.appendChild(script);
-        }
+        });
+    }
 
-        // Callback function to initialize the map
-        function initializeMap() {
-            initMap();
-        }
+    function addUserAddress(address) {
+        $.ajax({
+            url: 'https://localhost:7223/api/locationapi/addAddress',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(address),
+            success: function (response) {
+                console.log('Address added successfully:', response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
 
-        // Call the function to load the Google Maps API script
-        loadGoogleMapsScript('initializeMap')
+    function getRoute(origin, destination) {
+        $.ajax({
+            url: 'https://localhost:7223/api/locationapi/route',
+            type: 'GET',
+            data: { origin: origin, destination: destination },
+            success: function (response) {
+                displayRoute(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
 
-        function getGeocode(latLng) {
-            var lat = latLng.lat();
-            var lng = latLng.lng();
-            var address = lat + ',' + lng;
-
-            $.ajax({
-                url: 'https://localhost:7223/api/locationapi/geocode',
-                type: 'GET',
-                data: { address: address },
-                success: function (response) {
-                    displayAddress(response.formatted_address, latLng);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-
-        function displayAddress(address, latLng) {
-            $('#clickedAddress').remove();
-            $('<div id="clickedAddress"><h3>Clicked Address:</h3><p>' + address + '</p></div>').insertAfter('#map');
-
-            // Now get the route from the current location to the clicked address
-            var origin = currentLocation.lat + ',' + currentLocation.lng;
-            var destination = latLng.lat() + ',' + latLng.lng();
-
-            $.ajax({
-                url: 'https://localhost:7223/api/locationapi/route',
-                type: 'GET',
-                data: { origin: origin, destination: destination },
-                success: function (response) {
-                    displayRoute(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-
-        function displayRoute(route) {
-            $('#route').remove();
-            $('<div id="route"><h3>Route:</h3><p>' + JSON.stringify(route) + '</p></div>').insertAfter('#clickedAddress');
-        }
-    </script>
+    function displayRoute(route) {
+        $('#route').html('<h3>Route:</h3><p>' + JSON.stringify(route) + '</p>');
+    }
+</script>
