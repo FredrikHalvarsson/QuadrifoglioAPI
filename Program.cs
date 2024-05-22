@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using QuadrifoglioAPI.Data;
 using QuadrifoglioAPI.Models;
 using QuadrifoglioAPI.Services;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace QuadrifoglioAPI
@@ -63,6 +65,9 @@ namespace QuadrifoglioAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Add restaurant service
+            builder.Services.AddScoped<RestaurantService>();
+
             // Get the Google Maps API key
             var googleMapsApiKey = builder.Configuration["GoogleMaps:ApiKey"];
 
@@ -77,7 +82,13 @@ namespace QuadrifoglioAPI
                 googleMapsApiKey
             ));
 
+            builder.Services.AddMvc(options =>
+            {
+                options.OutputFormatters.OfType<StringOutputFormatter>().FirstOrDefault()?.SupportedEncodings.Add(Encoding.UTF8);
+            });
+
             var app = builder.Build();
+
 
             // Seed the database with initial data
             using (var scope = app.Services.CreateScope())

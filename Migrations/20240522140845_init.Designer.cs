@@ -12,7 +12,7 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240521135824_init")]
+    [Migration("20240522140845_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -158,6 +158,62 @@ namespace QuadrifoglioAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("QuadrifoglioAPI.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Addresses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            City = "Hudiksvall",
+                            Country = "Sweden",
+                            PostalCode = "824 43",
+                            State = "Gävleborg",
+                            Street = "Hövdingegatan 13A",
+                            UserId = "121f66c1-4b2c-40dc-a453-a610b5c49ec9"
+                        });
+                });
+
             modelBuilder.Entity("QuadrifoglioAPI.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -165,10 +221,6 @@ namespace QuadrifoglioAPI.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -233,6 +285,26 @@ namespace QuadrifoglioAPI.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "121f66c1-4b2c-40dc-a453-a610b5c49ec9",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0d6eceed-d156-4d6c-8872-37208421de75",
+                            Email = "fredrik@user.com",
+                            EmailConfirmed = true,
+                            FirstName = "Fredrik",
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "FREDRIK@USER.COM",
+                            NormalizedUserName = "FREDRIK@USER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGFyHnikd5Yn9Z2Rl7FXHtHthObv4OzC41moAkc4tlKu4xeosBRMJUjx9dcHxJICrQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "59aa725d-305f-4303-adca-1e599a253103",
+                            TwoFactorEnabled = false,
+                            UserName = "fredrik@user.com"
+                        });
                 });
 
             modelBuilder.Entity("QuadrifoglioAPI.Models.Ingredient", b =>
@@ -355,6 +427,86 @@ namespace QuadrifoglioAPI.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("QuadrifoglioAPI.Models.Restaurant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("Restaurants");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddressId = 1,
+                            Name = "IlQuadrifoglio - Hudiksvall"
+                        });
+                });
+
+            modelBuilder.Entity("QuadrifoglioAPI.Models.RestaurantAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RestaurantAddress");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            City = "Hudiksvall",
+                            Country = "Sweden",
+                            PostalCode = "824 43",
+                            State = "Gävleborg",
+                            Street = "Kungsgatan 25"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -406,6 +558,17 @@ namespace QuadrifoglioAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("QuadrifoglioAPI.Models.Address", b =>
+                {
+                    b.HasOne("QuadrifoglioAPI.Models.ApplicationUser", "User")
+                        .WithMany("Addresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("QuadrifoglioAPI.Models.Ingredient", b =>
                 {
                     b.HasOne("QuadrifoglioAPI.Models.OrderProduct", null)
@@ -443,8 +606,21 @@ namespace QuadrifoglioAPI.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("QuadrifoglioAPI.Models.Restaurant", b =>
+                {
+                    b.HasOne("QuadrifoglioAPI.Models.RestaurantAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+                });
+
             modelBuilder.Entity("QuadrifoglioAPI.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("Addresses");
+
                     b.Navigation("Orders");
                 });
 

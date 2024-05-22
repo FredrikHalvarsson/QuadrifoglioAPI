@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
 using QuadrifoglioAPI.DTOs;
 using QuadrifoglioAPI.Models;
 using QuadrifoglioAPI.Services;
@@ -16,11 +17,15 @@ namespace QuadrifoglioAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ICompositeViewEngine _viewEngine;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RestaurantService _restaurantService;
 
-        public LocationController(IConfiguration configuration, ICompositeViewEngine viewEngine)
+        public LocationController(IConfiguration configuration, ICompositeViewEngine viewEngine, UserManager<ApplicationUser> userManager, RestaurantService restaurantService)
         {
             _configuration = configuration;
             _viewEngine = viewEngine;
+            _userManager = userManager;
+            _restaurantService = restaurantService;
         }
 
         [HttpGet("Index")]
@@ -31,86 +36,32 @@ namespace QuadrifoglioAPI.Controllers
         }
 
         [HttpGet("LocationPartial")]
-        public IActionResult LocationPartial()
+        public async Task<IActionResult> LocationPartial(string userName)
         {
-            ViewData["GoogleMapsApiKey"] = _configuration["GoogleMaps:ApiKey"];
-            return PartialView("LocationPartial");
-        }
+            var user = await _userManager.Users
+                .Include(u => u.Addresses)
+                .FirstOrDefaultAsync();
+                //.FirstOrDefaultAsync(u => u.UserName == userName);
+            var restaurants = _restaurantService.GetAllRestaurants(); // Example method to retrieve all restaurants
 
-        private async Task<string> RenderViewToStringAsync(string viewName, object model)
-        {
-            var viewEngineResult = _viewEngine.FindView(ControllerContext, viewName, false);
-
-            if (!viewEngineResult.Success)
+            if (user != null)
             {
-                return $"View '{viewName}' not found";
+                var model = new LocationPartialViewModel
+                {
+                    User = user,
+                    Restaurants = restaurants,
+                    GoogleMapsApiKey = _configuration["GoogleMaps:ApiKey"]
+                };
+                return PartialView("LocationPartial", model);
+            }
+            else
+            {
+                // Create a partial view to handle no user, 
+                // or make endpoint inaccessable unless authenticated
+                //return PartialView("RequireSignInPartial");
+                return NotFound();
             }
 
-            var view = viewEngineResult.View;
-            ViewData.Model = model;
-
-            using (var sw = new StringWriter())
-            {
-                var viewContext = new ViewContext(
-                    ControllerContext,
-                    view,
-                    ViewData,
-                    TempData,
-                    sw,
-                    new HtmlHelperOptions()
-                );
-
-                await view.RenderAsync(viewContext);
-
-                return sw.ToString();
-            }
         }
     }
-
-
-
-    //private readonly UserManager<ApplicationUser> _userManager;
-    //private readonly UserService _userService;
-
-    //public LocationController(UserManager<ApplicationUser> userManager, UserService userService)
-    //{
-    //    _userManager = userManager;
-    //    _userService = userService;
-    //}
-
-    //[HttpPost("update")]
-    //public async Task<IActionResult> UpdateUserLocation([FromBody] UserLocationDTO locationData)
-    //{
-    //    // Get the user's ID from the token or any other authentication mechanism
-    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    //    if (userId == null)
-    //        return Unauthorized(); // User is not authenticated
-
-    //    var user = await _userManager.FindByIdAsync(userId);
-
-    //    if (user == null)
-    //        return NotFound(); // User not found
-
-    //    // Update the user's location with the received latitude and longitude
-    //    user.Latitude = locationData.Latitude;
-    //    user.Longitude = locationData.Longitude;
-
-    //    // Save the changes to the database
-    //    var result = await _userManager.UpdateAsync(user);
-
-    //    if (result.Succeeded)
-    //    {
-    //        // Optionally, you can also update the user's location asynchronously
-    //        // This allows you to perform any additional tasks without delaying the response
-    //        _ = _userService.UpdateUserLocationAsync(user);
-
-    //        return Ok();
-    //    }
-    //    else
-    //    {
-    //        // Handle the case where updating user failed
-    //        return BadRequest("Failed to update user location.");
-    //    }
-    //}
 }
