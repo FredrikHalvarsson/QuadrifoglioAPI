@@ -21,7 +21,9 @@ namespace QuadrifoglioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders
+                .Include(o=>o.OrderProducts)
+                .ToListAsync();
         }
 
         // GET: api/Orders/5
