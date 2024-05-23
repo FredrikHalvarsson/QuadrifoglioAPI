@@ -40,25 +40,19 @@ namespace QuadrifoglioAPI.Controllers
             return Ok(route);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("addAddress")]
-        public async Task<IActionResult> AddNewAddress([FromBody] AddressDTO addressDto)
+        public async Task<IActionResult> AddAddress([FromQuery] string street, [FromQuery] string zip, [FromQuery] string city, [FromQuery] string userId)
         {
-            var userId = addressDto.UserId;
-            if (userId == null)
+            var address = new Address
             {
-                return Unauthorized();
-            }
-
-            var newAddress = new Address
-            {
-                Street = addressDto.Street,
-                PostalCode = addressDto.PostalCode,
-                City = addressDto.City,
+                Street = street,
+                PostalCode = zip,
+                City = city,
                 UserId = userId
             };
 
-            _context.Add(newAddress);
+            _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
 
             return Ok();
