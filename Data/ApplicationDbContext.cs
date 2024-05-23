@@ -35,10 +35,8 @@ namespace QuadrifoglioAPI.Data
             {
                 Id = 1,
                 Street = "Kungsgatan 25",
-                City = "Hudiksvall",
-                State = "Gävleborg",
                 PostalCode = "824 43",
-                Country = "Sweden"
+                City = "Hudiksvall"
             };
 
             var restaurant = new Restaurant
@@ -74,9 +72,7 @@ namespace QuadrifoglioAPI.Data
                 Id = 2,
                 Street = "Hövdingegatan 13A",
                 City = "Hudiksvall",
-                State = "Gävleborg",
                 PostalCode = "824 43",
-                Country = "Sweden",
                 UserId = user.Id,
             };
 
