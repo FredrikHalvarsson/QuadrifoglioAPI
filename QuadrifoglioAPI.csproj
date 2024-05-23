@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="BackgroundServices\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

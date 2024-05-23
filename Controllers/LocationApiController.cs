@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QuadrifoglioAPI.Data;
+using QuadrifoglioAPI.DTOs;
 using QuadrifoglioAPI.Models;
 using QuadrifoglioAPI.Services;
 using System.Security.Claims;
@@ -14,11 +17,13 @@ namespace QuadrifoglioAPI.Controllers
     {
         private readonly GoogleMapsService _googleMapsService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public LocationApiController(GoogleMapsService googleMapsService, UserManager<ApplicationUser> userManager)
+        public LocationApiController(GoogleMapsService googleMapsService, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _googleMapsService = googleMapsService;
             _userManager = userManager;
+            _context = context;
         }
 
         [HttpGet("geocode")]
@@ -37,25 +42,26 @@ namespace QuadrifoglioAPI.Controllers
 
         [Authorize]
         [HttpPost("addAddress")]
-        public async Task<IActionResult> AddAddress([FromBody] Address address)
+        public async Task<IActionResult> AddNewAddress([FromBody] AddressDTO addressDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
+            var userId = addressDto.UserId;
+            if (userId == null)
             {
-                return NotFound("User not found.");
+                return Unauthorized();
             }
 
-            user.Addresses.Add(address);
-            var result = await _userManager.UpdateAsync(user);
-
-            if (result.Succeeded)
+            var newAddress = new Address
             {
-                return Ok(user.Addresses);
-            }
+                Street = addressDto.Street,
+                PostalCode = addressDto.PostalCode,
+                City = addressDto.City,
+                UserId = userId
+            };
 
-            return BadRequest("Failed to add address.");
+            _context.Add(newAddress);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

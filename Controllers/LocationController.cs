@@ -36,12 +36,13 @@ namespace QuadrifoglioAPI.Controllers
         }
 
         [HttpGet("LocationPartial")]
-        public async Task<IActionResult> LocationPartial(string userName)
+        public async Task<IActionResult> LocationPartial(
+            [FromQuery(Name = "userName")] string userName)
         {
             var user = await _userManager.Users
                 .Include(u => u.Addresses)
-                .FirstOrDefaultAsync();
-                //.FirstOrDefaultAsync(u => u.UserName == userName);
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+            //.FirstOrDefaultAsync();
             var restaurants = _restaurantService.GetAllRestaurants(); // Example method to retrieve all restaurants
 
             if (user != null)
