@@ -26,7 +26,7 @@ namespace QuadrifoglioAPI.Data
 
             // Seed data
             SeedRestaurant(builder);
-            SeedUser(builder);
+            //SeedUser(builder);
         }
 
         private void SeedRestaurant(ModelBuilder builder)

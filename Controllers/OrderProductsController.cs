@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuadrifoglioAPI.Data;
 using QuadrifoglioAPI.Models;
@@ -77,7 +76,7 @@ namespace QuadrifoglioAPI.Controllers
             _context.OrderProducts.Add(orderProduct);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrderProduct", new { id = orderProduct.OrderProductId }, orderProduct);
+            return CreatedAtAction("GetOrderProducts", new { id = orderProduct.OrderProductId }, orderProduct);
         }
 
         // DELETE: api/OrderProducts/5
