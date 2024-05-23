@@ -11,12 +11,13 @@ namespace QuadrifoglioAPI.Models
         public int OrderProductId { get; set; }
 
         public int Quantity { get; set; }
-
+        [ForeignKey("Order")]
         public int FkOrderId { get; set; }
 
         [ForeignKey("Product")]
         public int FkProductId { get; set; }
-        public Product Product { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Product? Product { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<Ingredient>? Ingredients { get; set; }
     }
