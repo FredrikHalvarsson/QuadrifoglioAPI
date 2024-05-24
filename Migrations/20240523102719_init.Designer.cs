@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuadrifoglioAPI.Data;
 
@@ -11,9 +12,11 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240523102719_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,18 +413,6 @@ namespace QuadrifoglioAPI.Migrations
                             Id = 1,
                             AddressId = 1,
                             Name = "IlQuadrifoglio - Hudiksvall"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AddressId = 2,
-                            Name = "IlQuadrifoglio - Sundsvall"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AddressId = 3,
-                            Name = "IlQuadrifoglio - Övik"
                         });
                 });
 
@@ -459,20 +450,6 @@ namespace QuadrifoglioAPI.Migrations
                             City = "Hudiksvall",
                             PostalCode = "824 43",
                             Street = "Kungsgatan 25"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Sundsvall",
-                            PostalCode = "852 30",
-                            Street = "Storgatan 6"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Örnsköldsvik",
-                            PostalCode = "891 63",
-                            Street = "Köpmangatan 3A"
                         });
                 });
 

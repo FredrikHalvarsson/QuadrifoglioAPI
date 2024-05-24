@@ -18,6 +18,7 @@ namespace QuadrifoglioAPI.Data
         public DbSet<OrderProduct> OrderProducts { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        //public DbSet<RestaurantAddress> RestaurantAddresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -26,19 +27,17 @@ namespace QuadrifoglioAPI.Data
 
             // Seed data
             SeedRestaurant(builder);
-            //SeedUser(builder);
         }
 
         private void SeedRestaurant(ModelBuilder builder)
         {
+            //Hudik
             var restaurantAddress = new RestaurantAddress
             {
                 Id = 1,
                 Street = "Kungsgatan 25",
-                City = "Hudiksvall",
-                State = "Gävleborg",
                 PostalCode = "824 43",
-                Country = "Sweden"
+                City = "Hudiksvall"
             };
 
             var restaurant = new Restaurant
@@ -50,38 +49,44 @@ namespace QuadrifoglioAPI.Data
 
             builder.Entity<RestaurantAddress>().HasData(restaurantAddress);
             builder.Entity<Restaurant>().HasData(restaurant);
-        }
 
-        private void SeedUser(ModelBuilder builder)
-        {
-            var hasher = new PasswordHasher<ApplicationUser>();
-
-            var user = new ApplicationUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = "fredrik@user.com",
-                NormalizedUserName = "FREDRIK@USER.COM",
-                Email = "fredrik@user.com",
-                NormalizedEmail = "FREDRIK@USER.COM",
-                EmailConfirmed = true,
-                FirstName = "Fredrik",
-                LastName = "User",
-                PasswordHash = hasher.HashPassword(null, "User@123")
-            };
-
-            var userAddress = new Address
+            //Sundsvall
+            var restaurantAddress2 = new RestaurantAddress
             {
                 Id = 2,
-                Street = "Hövdingegatan 13A",
-                City = "Hudiksvall",
-                State = "Gävleborg",
-                PostalCode = "824 43",
-                Country = "Sweden",
-                UserId = user.Id,
+                Street = "Storgatan 6",
+                PostalCode = "852 30",
+                City = "Sundsvall"
             };
 
-            builder.Entity<ApplicationUser>().HasData(user);
-            builder.Entity<Address>().HasData(userAddress);
+            var restaurant2 = new Restaurant
+            {
+                Id = 2,
+                Name = "IlQuadrifoglio - Sundsvall",
+                AddressId = 2 // Foreign key for address
+            };
+
+            builder.Entity<RestaurantAddress>().HasData(restaurantAddress2);
+            builder.Entity<Restaurant>().HasData(restaurant2);
+
+            //Övik
+            var restaurantAddress3 = new RestaurantAddress
+            {
+                Id = 3,
+                Street = "Köpmangatan 3A",
+                PostalCode = "891 63",
+                City = "Örnsköldsvik"
+            };
+
+            var restaurant3 = new Restaurant
+            {
+                Id = 3,
+                Name = "IlQuadrifoglio - Övik",
+                AddressId = 3 // Foreign key for address
+            };
+
+            builder.Entity<RestaurantAddress>().HasData(restaurantAddress3);
+            builder.Entity<Restaurant>().HasData(restaurant3);
         }
 
         //For more detailed error messages

@@ -12,8 +12,8 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240523075704_Init")]
-    partial class Init
+    [Migration("20240523113002_seed")]
+    partial class seed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -171,20 +171,10 @@ namespace QuadrifoglioAPI.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -423,6 +413,18 @@ namespace QuadrifoglioAPI.Migrations
                             Id = 1,
                             AddressId = 1,
                             Name = "IlQuadrifoglio - Hudiksvall"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AddressId = 2,
+                            Name = "IlQuadrifoglio - Sundsvall"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AddressId = 3,
+                            Name = "IlQuadrifoglio - Övik"
                         });
                 });
 
@@ -439,20 +441,10 @@ namespace QuadrifoglioAPI.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -468,10 +460,22 @@ namespace QuadrifoglioAPI.Migrations
                         {
                             Id = 1,
                             City = "Hudiksvall",
-                            Country = "Sweden",
                             PostalCode = "824 43",
-                            State = "Gävleborg",
                             Street = "Kungsgatan 25"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            City = "Sundsvall",
+                            PostalCode = "852 30",
+                            Street = "Storgatan 6"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            City = "Örnsköldsvik",
+                            PostalCode = "891 63",
+                            Street = "Köpmangatan 3A"
                         });
                 });
 
