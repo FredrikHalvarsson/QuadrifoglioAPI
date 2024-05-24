@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuadrifoglioAPI.Data;
 using QuadrifoglioAPI.Models;
@@ -39,6 +38,26 @@ namespace QuadrifoglioAPI.Controllers
 
             return order;
         }
+        [HttpGet("latest/{username}")]
+        public async Task<ActionResult<Order>> GetLatestOrder(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            System.Diagnostics.Debug.WriteLine($"Received userName: {username}");
+            if (user == null)
+            {
+                return NotFound($"Användaren med användarnamnet '{username}' hittades inte.");
+            }
+            // Hämta den senaste ordern för den hittade användaren
+            var latestOrder = user.Orders.LastOrDefault();
+
+            if (latestOrder == null)
+            {
+                return NotFound($"Det finns ingen oskickad order för användaren med användarnamnet '{username}'.");
+            }
+
+            return latestOrder;
+        }
+
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
