@@ -30,7 +30,10 @@ namespace QuadrifoglioAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrders(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync(o=>o.OrderId==id);
 
             if (order == null)
             {
@@ -42,14 +45,18 @@ namespace QuadrifoglioAPI.Controllers
         [HttpGet("latest/{username}")]
         public async Task<ActionResult<Order>> GetLatestOrder(string username)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var user = await _context.Users
+                .Include(u=>u.Orders)
+                    .ThenInclude(o=>o.OrderProducts)
+                        .ThenInclude(op=>op.Product)
+                .FirstOrDefaultAsync(u => u.UserName == username);
             System.Diagnostics.Debug.WriteLine($"Received userName: {username}");
             if (user == null)
             {
                 return NotFound($"Användaren med användarnamnet '{username}' hittades inte.");
             }
             // Hämta den senaste ordern för den hittade användaren
-            var latestOrder = user.Orders.First();
+            var latestOrder = user.Orders.LastOrDefault();
 
             if (latestOrder == null)
             {
