@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace QuadrifoglioAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class OrderProductFK : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -261,17 +263,17 @@ namespace QuadrifoglioAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     FkOrderId = table.Column<int>(type: "int", nullable: false),
-                    FkProductId = table.Column<int>(type: "int", nullable: false),
-                    OrderId = table.Column<int>(type: "int", nullable: true)
+                    FkProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderProducts", x => x.OrderProductId);
                     table.ForeignKey(
-                        name: "FK_OrderProducts_Orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_OrderProducts_Orders_FkOrderId",
+                        column: x => x.FkOrderId,
                         principalTable: "Orders",
-                        principalColumn: "OrderId");
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderProducts_Products_FkProductId",
                         column: x => x.FkProductId,
@@ -310,12 +312,22 @@ namespace QuadrifoglioAPI.Migrations
             migrationBuilder.InsertData(
                 table: "RestaurantAddress",
                 columns: new[] { "Id", "City", "PostalCode", "Street" },
-                values: new object[] { 1, "Hudiksvall", "824 43", "Kungsgatan 25" });
+                values: new object[,]
+                {
+                    { 1, "Hudiksvall", "824 43", "Kungsgatan 25" },
+                    { 2, "Sundsvall", "852 30", "Storgatan 6" },
+                    { 3, "Örnsköldsvik", "891 63", "Köpmangatan 3A" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Restaurants",
                 columns: new[] { "Id", "AddressId", "Name" },
-                values: new object[] { 1, 1, "IlQuadrifoglio - Hudiksvall" });
+                values: new object[,]
+                {
+                    { 1, 1, "IlQuadrifoglio - Hudiksvall" },
+                    { 2, 2, "IlQuadrifoglio - Sundsvall" },
+                    { 3, 3, "IlQuadrifoglio - Övik" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
@@ -372,14 +384,14 @@ namespace QuadrifoglioAPI.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderProducts_FkOrderId",
+                table: "OrderProducts",
+                column: "FkOrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderProducts_FkProductId",
                 table: "OrderProducts",
                 column: "FkProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderProducts_OrderId",
-                table: "OrderProducts",
-                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_FkCustomerId",
