@@ -21,7 +21,8 @@ namespace QuadrifoglioAPI.Controllers
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             return await _context.Orders
-                .Include(o=>o.OrderProducts)
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
                 .ToListAsync();
         }
 
@@ -48,7 +49,7 @@ namespace QuadrifoglioAPI.Controllers
                 return NotFound($"Användaren med användarnamnet '{username}' hittades inte.");
             }
             // Hämta den senaste ordern för den hittade användaren
-            var latestOrder = user.Orders.LastOrDefault();
+            var latestOrder = user.Orders.First();
 
             if (latestOrder == null)
             {
@@ -98,7 +99,7 @@ namespace QuadrifoglioAPI.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+            return CreatedAtAction("GetOrders", new { id = order.OrderId }, order);
         }
 
         // DELETE: api/Orders/5
