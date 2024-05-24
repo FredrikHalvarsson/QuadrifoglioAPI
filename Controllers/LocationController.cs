@@ -28,12 +28,6 @@ namespace QuadrifoglioAPI.Controllers
             _restaurantService = restaurantService;
         }
 
-        [HttpGet("Index")]
-        public IActionResult Index()
-        {
-            ViewData["GoogleMapsApiKey"] = _configuration["GoogleMaps:ApiKey"];
-            return View();
-        }
 
         [HttpGet("LocationPartial")]
         public async Task<IActionResult> LocationPartial(
@@ -62,7 +56,6 @@ namespace QuadrifoglioAPI.Controllers
                 //return PartialView("RequireSignInPartial");
                 return NotFound();
             }
-
         }
     }
 }
