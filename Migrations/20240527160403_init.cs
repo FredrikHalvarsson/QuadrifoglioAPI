@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuadrifoglioAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class OrderProductFK : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -326,7 +326,7 @@ namespace QuadrifoglioAPI.Migrations
                 {
                     { 1, 1, "IlQuadrifoglio - Hudiksvall" },
                     { 2, 2, "IlQuadrifoglio - Sundsvall" },
-                    { 3, 3, "IlQuadrifoglio - Övik" }
+                    { 3, 3, "IlQuadrifoglio - Örnsköldsvik" }
                 });
 
             migrationBuilder.CreateIndex(
