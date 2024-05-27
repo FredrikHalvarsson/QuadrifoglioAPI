@@ -12,8 +12,8 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240524151933_OrderProductFK")]
-    partial class OrderProductFK
+    [Migration("20240527160403_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -421,7 +421,7 @@ namespace QuadrifoglioAPI.Migrations
                         {
                             Id = 3,
                             AddressId = 3,
-                            Name = "IlQuadrifoglio - Övik"
+                            Name = "IlQuadrifoglio - Örnsköldsvik"
                         });
                 });
 

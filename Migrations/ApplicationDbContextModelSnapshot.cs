@@ -418,7 +418,7 @@ namespace QuadrifoglioAPI.Migrations
                         {
                             Id = 3,
                             AddressId = 3,
-                            Name = "IlQuadrifoglio - Övik"
+                            Name = "IlQuadrifoglio - Örnsköldsvik"
                         });
                 });
 
