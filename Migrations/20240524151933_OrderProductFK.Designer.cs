@@ -12,8 +12,8 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240523113002_seed")]
-    partial class seed
+    [Migration("20240524151933_OrderProductFK")]
+    partial class OrderProductFK
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -338,17 +338,14 @@ namespace QuadrifoglioAPI.Migrations
                     b.Property<int>("FkProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("OrderProductId");
 
-                    b.HasIndex("FkProductId");
+                    b.HasIndex("FkOrderId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("FkProductId");
 
                     b.ToTable("OrderProducts");
                 });
@@ -565,15 +562,19 @@ namespace QuadrifoglioAPI.Migrations
 
             modelBuilder.Entity("QuadrifoglioAPI.Models.OrderProduct", b =>
                 {
+                    b.HasOne("QuadrifoglioAPI.Models.Order", "Order")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("FkOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("QuadrifoglioAPI.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("FkProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuadrifoglioAPI.Models.Order", null)
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("OrderId");
+                    b.Navigation("Order");
 
                     b.Navigation("Product");
                 });

@@ -81,7 +81,7 @@ namespace QuadrifoglioAPI.Data
             var restaurant3 = new Restaurant
             {
                 Id = 3,
-                Name = "IlQuadrifoglio - Övik",
+                Name = "IlQuadrifoglio - Örnsköldsvik",
                 AddressId = 3 // Foreign key for address
             };
 

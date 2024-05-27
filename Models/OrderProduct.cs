@@ -13,6 +13,8 @@ namespace QuadrifoglioAPI.Models
         public int Quantity { get; set; }
         [ForeignKey("Order")]
         public int FkOrderId { get; set; }
+        [JsonIgnore]
+        public Order? Order { get; set; }
 
         [ForeignKey("Product")]
         public int FkProductId { get; set; }
