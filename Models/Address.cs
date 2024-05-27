@@ -25,7 +25,7 @@ namespace QuadrifoglioAPI.Models
         [ForeignKey("User")]
         public string UserId { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore]
         public virtual ApplicationUser? User { get; set; }
     }
 }

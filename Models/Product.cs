@@ -29,7 +29,7 @@ namespace QuadrifoglioAPI.Models
         public bool IsSpecial { get; set; }
         public decimal SalesTax { get; } = 0.12m;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore]
         public List<Ingredient>? Ingredients { get; set; }
     }
 }

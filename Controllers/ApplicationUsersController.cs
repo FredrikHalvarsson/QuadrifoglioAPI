@@ -21,14 +21,24 @@ namespace QuadrifoglioAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ApplicationUser>>> ApplicationUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
+                .Include(u => u.Addresses)
+                .ToListAsync();
         }
 
         // GET: api/ApplicationUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApplicationUser>> GetApplicationUser(int id)
+        public async Task<ActionResult<ApplicationUser>> GetApplicationUser(string id)
         {
-            var users = await _context.Users.FindAsync(id);
+            var users = await _context.Users
+                .Include(u=>u.Orders)
+                    .ThenInclude(o=>o.OrderProducts)
+                        .ThenInclude(op=>op.Product)
+                .Include(u=>u.Addresses)
+                .FirstOrDefaultAsync(u=>u.Id == id);
 
             if (users == null)
             {

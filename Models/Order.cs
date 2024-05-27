@@ -29,7 +29,7 @@ namespace QuadrifoglioAPI.Models
         public ApplicationUser? Customer { get; set; }
 
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore]
         public List<OrderProduct>? OrderProducts { get; set; }
     }
 }
