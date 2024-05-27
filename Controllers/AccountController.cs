@@ -69,6 +69,31 @@ namespace QuadrifoglioAPI.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("getuser")]
+        public async Task<IActionResult> GetUser(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest(new { Message = "Username is required." });
+            }
+
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email,
+                Roles = await _userManager.GetRolesAsync(user)
+            };
+
+            return Ok(userDto);
+        }
+
         [HttpGet("getroles")]
         public async Task<IActionResult> GetRoles(string username)
         {
