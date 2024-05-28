@@ -12,7 +12,7 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240527160403_init")]
+    [Migration("20240528151310_init")]
     partial class init
     {
         /// <inheritdoc />

@@ -18,7 +18,7 @@ namespace QuadrifoglioAPI.Models
         //[JsonIgnore]
         public virtual ICollection<Address>? Addresses { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public List<Order>? Orders { get; set; }
 
         public ApplicationUser()
