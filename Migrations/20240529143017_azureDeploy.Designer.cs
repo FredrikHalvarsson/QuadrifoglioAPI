@@ -12,8 +12,8 @@ using QuadrifoglioAPI.Data;
 namespace QuadrifoglioAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240528151310_init")]
-    partial class init
+    [Migration("20240529143017_azureDeploy")]
+    partial class azureDeploy
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

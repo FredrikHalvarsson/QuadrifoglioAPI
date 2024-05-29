@@ -176,7 +176,7 @@
 
         // Send the new address to the server to save it in the database
         var userId = '@Model.User.Id';
-        $.post(`https://localhost:7223/api/locationapi/addAddress?street=${newStreetAddress}&zip=${newPostalCode}&city=${newCity}&userId=${userId}`)
+        $.post(`https://ilquadrifogliodb.database.windows.net/api/locationapi/addAddress?street=${newStreetAddress}&zip=${newPostalCode}&city=${newCity}&userId=${userId}`)
         .done(function (response) {
             alert("Address added successfully!");
         }).fail(function (error) {

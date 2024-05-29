@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuadrifoglioAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class azureDeploy : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
