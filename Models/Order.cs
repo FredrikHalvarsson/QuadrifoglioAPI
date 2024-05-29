@@ -7,10 +7,10 @@ namespace QuadrifoglioAPI.Models
     public enum Status
     {
         Unsent,
-        Pending,
-        Preparing,
-        Delivering,
-        Delivered
+        Mottagen,
+        Tillagas,
+        Levereras,
+        Levererad
 
     }
     public class Order
