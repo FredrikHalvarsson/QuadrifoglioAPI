@@ -27,7 +27,7 @@ namespace QuadrifoglioAPI
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("https://localhost:7281")
+                    builder => builder.WithOrigins("https://localhost:7281", "https://ilquadrifoglio.windows.net") //add new address form azure
                                       .AllowAnyMethod()
                                       .AllowAnyHeader());
             });
