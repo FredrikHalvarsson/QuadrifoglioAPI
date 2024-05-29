@@ -33,7 +33,8 @@ namespace QuadrifoglioAPI.Controllers
             var order = await _context.Orders
                 .Include(o => o.OrderProducts)
                     .ThenInclude(op => op.Product)
-                .FirstOrDefaultAsync(o=>o.OrderId==id);
+                .Include(c => c.Customer)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
             {
@@ -46,9 +47,9 @@ namespace QuadrifoglioAPI.Controllers
         public async Task<ActionResult<Order>> GetLatestOrder(string username)
         {
             var user = await _context.Users
-                .Include(u=>u.Orders)
-                    .ThenInclude(o=>o.OrderProducts)
-                        .ThenInclude(op=>op.Product)
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
                 .FirstOrDefaultAsync(u => u.UserName == username);
             System.Diagnostics.Debug.WriteLine($"Received userName: {username}");
             if (user == null)
@@ -65,6 +66,36 @@ namespace QuadrifoglioAPI.Controllers
 
             return latestOrder;
         }
+
+        [HttpGet("all/{username}")]
+        public async Task<ActionResult<List<Order>>> GetUsersOrders(string username)
+        {
+            // Hämta användaren inklusive dess ordrar och orderprodukter
+            var user = await _context.Users
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            System.Diagnostics.Debug.WriteLine($"Received userName: {username}");
+
+            if (user == null)
+            {
+                return NotFound($"Användaren med användarnamnet '{username}' hittades inte.");
+            }
+
+            // Hämta alla ordrar för den hittade användaren
+            var userOrders = user.Orders;
+
+            if (userOrders == null || !userOrders.Any())
+            {
+                return NotFound($"Det finns inga ordrar för användaren med användarnamnet '{username}'.");
+            }
+
+            // Returnera sorterad lista av ordrar
+            return userOrders.OrderBy(o => o.OrderStatus).ToList();
+        }
+
 
 
         // PUT: api/Orders/5
